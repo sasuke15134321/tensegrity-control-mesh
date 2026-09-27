@@ -1,0 +1,58 @@
+{
+  "service_id": "tcm.structural-inspection.v1.0",
+  "contract_version": "1.0",
+  "primary_consumer": "software_agent",
+  "purpose": "structural_failure_inspection",
+  "operations": [
+    {
+      "method": "GET",
+      "path": "/capabilities",
+      "cost": "free",
+      "effect": "read_only"
+    },
+    {
+      "method": "GET",
+      "path": "/schema",
+      "cost": "free",
+      "effect": "read_only"
+    },
+    {
+      "method": "POST",
+      "path": "/inspect",
+      "cost": "free",
+      "effect": "compute_only",
+      "mutates_target_system": false
+    }
+  ],
+  "preconditions": [
+    "caller_declares_control_direction",
+    "caller_declares_adjustability",
+    "caller_declares_bounds_for_adaptive_controls",
+    "caller_declares_hard_controls"
+  ],
+  "non_goals": [
+    "semantic_substitutability_inference",
+    "execution_authorization",
+    "target_system_mutation",
+    "safety_probability_estimation"
+  ],
+  "result_semantics": {
+    "feasible": "structural re-equilibration exists within declared bounds",
+    "survival_ratio": "survived injected cases divided by tested injected cases",
+    "single_point_failures": "controls whose individual injected loss is unrecoverable",
+    "minimal_failure_sequences": "ordered failure cascades with no already-failed proper prefix"
+  },
+  "resource_limits": {
+    "max_controls": 20,
+    "max_depth": 2,
+    "max_cases": 1000
+  },
+  "commercial_policy": {
+    "planned_price": {
+      "amount": "0.01",
+      "currency": "USDC",
+      "unit": "inspection"
+    },
+    "payment_enforced": false
+  }
+}

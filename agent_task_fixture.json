@@ -1,0 +1,49 @@
+{
+  "schema_version": "tcm.control.v0.6",
+  "system_id": "unknown-agent-fixture",
+  "controls": [
+    {
+      "id": "control_a",
+      "direction": "negative",
+      "weight": 0.3,
+      "capacity": 1.0,
+      "mode": "adaptive",
+      "min_weight": 0.1,
+      "max_weight": 0.8,
+      "hard": false
+    },
+    {
+      "id": "control_b",
+      "direction": "negative",
+      "weight": 0.3,
+      "capacity": 1.0,
+      "mode": "adaptive",
+      "min_weight": 0.1,
+      "max_weight": 0.8,
+      "hard": false
+    },
+    {
+      "id": "control_c",
+      "direction": "positive",
+      "weight": 0.3,
+      "capacity": 1.0,
+      "mode": "adaptive",
+      "min_weight": 0.1,
+      "max_weight": 0.8,
+      "hard": false
+    },
+    {
+      "id": "control_d",
+      "direction": "positive",
+      "weight": 0.3,
+      "capacity": 1.0,
+      "mode": "adaptive",
+      "min_weight": 0.1,
+      "max_weight": 0.8,
+      "hard": false
+    }
+  ],
+  "inspection": {
+    "max_depth": 2
+  }
+}

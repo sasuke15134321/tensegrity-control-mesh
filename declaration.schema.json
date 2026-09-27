@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tcm:control:v0.6",
+  "title": "TCM Agent Control Declaration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "system_id",
+    "controls"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "tcm.control.v0.6"
+    },
+    "system_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "controls": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "direction",
+          "weight",
+          "capacity"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "direction": {
+            "enum": [
+              "negative",
+              "positive"
+            ]
+          },
+          "weight": {
+            "type": "number"
+          },
+          "capacity": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "mode": {
+            "enum": [
+              "fixed",
+              "adaptive"
+            ],
+            "default": "fixed"
+          },
+          "min_weight": {
+            "type": "number"
+          },
+          "max_weight": {
+            "type": "number"
+          },
+          "hard": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "maxItems": 20
+    },
+    "inspection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 2,
+          "maximum": 2
+        },
+        "include_hard": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_cases": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1000,
+          "maximum": 1000
+        }
+      }
+    }
+  }
+}
