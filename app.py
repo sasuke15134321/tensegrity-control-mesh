@@ -1,14 +1,17 @@
 """TCM v1.0 Bounded Public Candidate HTTP surface.
 
-No payment layer is implemented here. This is a local discovery/inspection API.
+Agent-first deterministic structural inspection API.
+POST /inspect is protected by x402 in production.
 Primary consumer: software agents. Human-readable docs are secondary.
 """
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import PlainTextResponse, JSONResponse
 from pydantic import BaseModel
 from typing import Any, Dict
+
+from x402_runtime import enforce_x402, TEST_MODE, PRICE_USDC, NETWORK
 
 from tensegrity_control_mesh import (
     DECLARATION_SCHEMA_VERSION,
@@ -71,13 +74,20 @@ CAPABILITIES = {
     },
     "commercial_policy": {
         "planned_price": {"amount": "0.01", "currency": "USDC", "unit": "inspection"},
-        "payment_enforced": False,
-        "note": "Price is fixed for the future paid endpoint; v1.0 public-candidate testing does not yet enforce payment."
+        "payment_enforced": not TEST_MODE,
+        "note": "POST /inspect is priced at 0.01 USDC via x402 on Base."
     },
     "payment": {
-        "required": False,
-        "protocol": None,
-        "note": "v1.0 does not yet enforce x402 or any payment protocol",
+        "required": not TEST_MODE,
+        "protocol": "x402",
+        "version": 2,
+        "scheme": "exact",
+        "network": NETWORK,
+        "currency": "USDC",
+        "price": PRICE_USDC,
+        "resource": "/inspect",
+        "test_mode": TEST_MODE,
+        "bazaar_extension": True,
     },
 }
 
@@ -112,9 +122,43 @@ GET /schema
 GET /openapi.json
 POST /inspect
 
-No payment is enforced in v1.0 public-candidate testing.
+Payment:
+- POST /inspect: 0.01 USDC via x402 on Base in production.
+- Discovery endpoints remain free.
+- A successful payment does not mean the result authorizes execution.
 """
 
+
+@app.middleware("http")
+async def x402_payment_boundary(request: Request, call_next):
+    return await enforce_x402(request, call_next)
+
+
+@app.get("/.well-known/x402.json", include_in_schema=False)
+def x402_discovery():
+    return {
+        "version": 1,
+        "endpoints": [
+            {
+                "path": "/inspect",
+                "method": "POST",
+                "price": PRICE_USDC,
+                "currency": "USDC",
+                "network": "base",
+                "description": (
+                    "Deterministic structural failure inspection of a "
+                    "caller-declared control mesh."
+                ),
+                "category": "agent-control",
+                "tags": [
+                    "agent-control",
+                    "structural-inspection",
+                    "failure-analysis",
+                    "x402",
+                ],
+            }
+        ],
+    }
 
 @app.get("/", include_in_schema=False)
 def root():

@@ -7,10 +7,10 @@ v1.0 freezes the first public resource envelope before deployment.
 - controls: maximum 20
 - ordered failure depth: maximum 2
 - injected cases: maximum 1,000
-- planned paid price: 0.01 USDC per `/inspect`
+- paid price: 0.01 USDC per `/inspect`
 
-The price is declared but **not yet enforced** in v1.0. No x402 metadata or
-402 payment behavior is claimed until the payment layer is actually implemented.
+`POST /inspect` is priced at **0.01 USDC** and protected by x402 on Base
+(`eip155:8453`) in production. Discovery endpoints remain free.
 
 With 20 injectable controls and depth 2, exhaustive ordered inspection is
 20 + (20 x 19) = 400 cases, below the service ceiling.
@@ -27,9 +27,8 @@ With 20 injectable controls and depth 2, exhaustive ordered inspection is
 
 - `POST /inspect`
 
-During public-candidate interoperability testing this endpoint remains unpaid.
-After public-Internet black-box verification, the intended commercial contract
-is 0.01 USDC per inspection.
+Production price: **0.01 USDC per inspection via x402**.
+Payment does not authorize execution; TCM returns structural evidence only.
 
 ## Interpretation boundary
 
@@ -40,9 +39,11 @@ TCM returns structural evidence only.
 - TCM does not infer semantic substitutability
 - TCM does not mutate the target system
 
-## Next evidence gate
+## Deployment
 
-Deploy the exact v1.0 candidate to a public HTTPS endpoint and run
-`external_probe.py` against that URL, including `--inject-error`.
+Public endpoint:
 
-Only after that succeeds should x402 payment enforcement be added.
+`https://tensegrity-control-mesh.onrender.com`
+
+Production payment enforcement requires the configured Render environment
+variables for the wallet and CDP hosted facilitator credentials.

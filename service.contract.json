@@ -19,7 +19,7 @@
     {
       "method": "POST",
       "path": "/inspect",
-      "cost": "free",
+      "cost": "0.01 USDC via x402",
       "effect": "compute_only",
       "mutates_target_system": false
     }
@@ -53,6 +53,9 @@
       "currency": "USDC",
       "unit": "inspection"
     },
-    "payment_enforced": false
+    "payment_enforced": true,
+    "protocol": "x402",
+    "network": "eip155:8453",
+    "scheme": "exact"
   }
 }

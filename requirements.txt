@@ -1,2 +1,6 @@
 fastapi>=0.115,<1
 uvicorn[standard]>=0.30,<1
+numpy>=1.26,<3
+httpx>=0.27,<1
+x402[fastapi,evm,extensions]==2.24.0
+cryptography>=3.0
