@@ -113,11 +113,24 @@ _x402_routes = {
 }
 
 
+# payment_middleware() is a factory. Construct it once and reuse the returned
+# callable instead of rebuilding its HTTP server wrapper, Bazaar registration,
+# lock, and facilitator initialization for every request (including health checks).
+_x402_middleware = None
+
+
+def _get_x402_middleware():
+    global _x402_middleware
+    if _x402_middleware is None:
+        _x402_middleware = payment_middleware(
+            _x402_routes,
+            _x402_server,
+        )
+    return _x402_middleware
+
+
 async def enforce_x402(request, call_next):
     if TEST_MODE:
         return await call_next(request)
 
-    return await payment_middleware(
-        _x402_routes,
-        _x402_server,
-    )(request, call_next)
+    return await _get_x402_middleware()(request, call_next)
