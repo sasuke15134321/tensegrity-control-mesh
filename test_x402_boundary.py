@@ -88,6 +88,7 @@ def test_discovery_endpoints_remain_free_in_test_mode():
     client = TestClient(app)
 
     for path in (
+        "/health",
         "/capabilities",
         "/schema",
         "/llms.txt",
@@ -114,3 +115,28 @@ def test_test_mode_does_not_claim_payment_required():
     assert capabilities["payment"]["network"] == "eip155:8453"
     assert capabilities["payment"]["price"] == "0.01"
     assert capabilities["payment"]["bazaar_extension"] is True
+
+
+def test_payment_middleware_factory_is_reused(monkeypatch):
+    """Regression: health traffic must not rebuild x402 middleware each request."""
+    factory_calls = 0
+
+    def fake_payment_middleware(routes, server):
+        nonlocal factory_calls
+        factory_calls += 1
+
+        async def middleware(request, call_next):
+            return await call_next(request)
+
+        return middleware
+
+    monkeypatch.setattr(x, "TEST_MODE", False)
+    monkeypatch.setattr(x, "payment_middleware", fake_payment_middleware)
+    monkeypatch.setattr(x, "_x402_middleware", None)
+
+    client = TestClient(app)
+    assert client.get("/health").status_code == 200
+    assert client.get("/health").status_code == 200
+    assert client.get("/capabilities").status_code == 200
+
+    assert factory_calls == 1
